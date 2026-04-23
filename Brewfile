@@ -10,6 +10,7 @@ tap "tsung-ju/iguanatexmac"
 # Core dev
 brew "git"
 brew "git-lfs"
+brew "chezmoi"
 
 # Python ecosystem
 brew "pixi"

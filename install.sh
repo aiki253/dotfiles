@@ -1,19 +1,26 @@
 #!/usr/bin/env bash
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+case "$(uname -s)" in
+  Darwin)
+    if ! command -v brew &>/dev/null; then
+      /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+    brew install chezmoi
+    ;;
+  Linux)
+    sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+    ;;
+esac
 
-for src in "$DOTFILES_DIR"/.*; do
-  name="$(basename "$src")"
+chezmoi init --apply https://github.com/aiki253/dotfiles
 
-  # スキップ対象
-  [[ "$name" == "." || "$name" == ".." || "$name" == ".git" ]] && continue
-
-  # .macos は実行スクリプトなのでシンボリックリンク対象外
-  [[ "$name" == ".macos" || "$name" == ".macos_backup" ]] && continue
-
-  dst="$HOME/$name"
-  ln -sf "$src" "$dst"
-  echo "Linked: $dst -> $src"
-done
-
-echo "Done."
+case "$(uname -s)" in
+  Darwin)
+    brew bundle --file="$(chezmoi source-path)/Brewfile"
+    ;;
+  Linux)
+    # TODO: apt対応
+    echo "Linux: パッケージインストールは手動で行ってください"
+    ;;
+esac
