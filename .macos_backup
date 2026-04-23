@@ -1,0 +1,954 @@
+#!/usr/bin/env bash
+
+# ~/.macos — https://mths.be/macos
+
+# 設定を上書きされないよう、開いているシステム環境設定を閉じる
+osascript -e 'tell application "System Preferences" to quit'
+
+# 管理者パスワードを事前に要求する
+sudo -v
+
+# `.macos` が完了するまで `sudo` のタイムスタンプを更新し続ける
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+
+###############################################################################
+# UI/UX 全般                                                                  #
+###############################################################################
+
+# コンピュータ名を設定する（システム環境設定 → 共有 と同様）
+#sudo scutil --set ComputerName "0x6D746873"
+#sudo scutil --set HostName "0x6D746873"
+#sudo scutil --set LocalHostName "0x6D746873"
+#sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "0x6D746873"
+
+# 起動時のサウンドエフェクトを無効にする
+sudo nvram SystemAudioVolume=" "
+
+# Yosemite 以降でメニューバーなどの透明効果を無効にする
+defaults write com.apple.universalaccess reduceTransparency -bool true
+
+# サイドバーのアイコンサイズを中に設定する
+defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
+
+# スクロールバーを常に表示する
+defaults write NSGlobalDomain AppleShowScrollBars -string "Always"
+# 指定可能な値: `WhenScrolling`、`Automatic`、`Always`
+
+# ツールバータイトルのロールオーバー遅延を調整する
+defaults write NSGlobalDomain NSToolbarTitleViewRolloverDelay -float 0
+
+# 保存パネルをデフォルトで展開した状態にする
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
+
+# 印刷パネルをデフォルトで展開した状態にする
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
+
+# デフォルトの保存先をディスクにする（iCloud ではなく）
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# ヘルプビューアのウィンドウを非フローティングモードにする
+defaults write com.apple.helpviewer DevMode -bool true
+
+# コード入力時に邪魔な自動大文字変換を無効にする
+defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
+
+# コード入力時に邪魔なスマートダッシュを無効にする
+defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
+
+# コード入力時に邪魔な自動ピリオド置換を無効にする
+defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
+
+# コード入力時に邪魔なスマートクォートを無効にする
+defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
+
+# 自動スペル修正を無効にする
+defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+
+# ==== 以下は私は使っていないが本家にあったUI/UX設定 ===
+# Yosemite 以降でメニューバーなどの透明効果を無効にする
+#defaults write com.apple.universalaccess reduceTransparency -bool true
+
+# フォーカスリングのアニメーションを無効にする
+#defaults write NSGlobalDomain NSUseAnimatedFocusRing -bool false
+
+# スムーズスクロールを無効にする
+# （アニメーションが乱れる古い Mac の場合はコメントアウトを外す）
+#defaults write NSGlobalDomain NSScrollAnimationEnabled -bool false
+
+# Cocoa アプリのウィンドウリサイズを高速化する
+#defaults write NSGlobalDomain NSWindowResizeTime -float 0.001
+
+# 印刷ジョブ完了後にプリンタアプリを自動終了する
+#defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
+
+# 「このアプリケーションを開いてもよろしいですか？」ダイアログを無効にする
+#defaults write com.apple.LaunchServices LSQuarantine -bool false
+
+# 「このアプリケーションで開く」メニューの重複を削除する（`lscleanup` エイリアスも参照）
+#/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
+
+# 標準テキストビューで ASCII 制御文字をキャレット記法で表示する
+# 例: `cd /tmp; unidecode "\x{0000}" > cc.txt; open -e cc.txt`
+#defaults write NSGlobalDomain NSTextShowsControlCharacters -bool true
+
+# システム全体でレジューム機能を無効にする
+#defaults write com.apple.systempreferences NSQuitAlwaysKeepsWindows -bool false
+
+# 非アクティブなアプリの自動終了を無効にする
+#defaults write NSGlobalDomain NSDisableAutomaticTermination -bool true
+
+# クラッシュレポーターを無効にする
+#defaults write com.apple.CrashReporter DialogType -string "none"
+
+# QuickLook の UTF-8 バグ修正 (https://mths.be/bbo)
+# 各種 Adobe アプリで問題が発生することがあるため、コメントアウト中 :(
+# 参照: https://github.com/mathiasbynens/dotfiles/issues/237
+#echo "0x08000100:0" > ~/.CFUserTextEncoding
+
+# ログイン画面の時計クリックで IP アドレス・ホスト名・OS バージョンを表示する
+#sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
+
+# 通知センターを無効にしメニューバーアイコンを削除する
+#launchctl unload -w /System/Library/LaunchAgents/com.apple.notificationcenterui.plist 2> /dev/null
+
+# カスタム壁紙を設定する。`DefaultDesktop.jpg` はシンボリックリンクで、
+# 壁紙は `/Library/Desktop Pictures/` にある。デフォルトは `Wave.jpg`。
+#rm -rf ~/Library/Application Support/Dock/desktoppicture.db
+#sudo rm -rf /System/Library/CoreServices/DefaultDesktop.jpg
+#sudo ln -s /path/to/your/image /System/Library/CoreServices/DefaultDesktop.jpg
+
+###############################################################################
+# トラックパッド、マウス、キーボード、Bluetooth、入力                          #
+###############################################################################
+
+# トラックパッド: このユーザーとログイン画面でタップクリックを有効にする
+defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool true
+defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
+
+# すべてのコントロールでキーボードフルアクセスを有効にする
+# （例: モーダルダイアログで Tab キーを使えるようにする）
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
+
+# Ctrl (^) キーとスクロールジェスチャーでズームする
+defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
+# ズーム中はキーボードフォーカスを追従する
+defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+
+# キーリピートを有効にする（長押し入力候補を無効にする）
+defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+
+# キーリピートを最高速に設定する
+defaults write NSGlobalDomain KeyRepeat -int 1
+defaults write NSGlobalDomain InitialKeyRepeat -int 10
+
+# 言語とテキストフォーマットを設定する
+# エラーメッセージは英語にしたいので，.zshrcの設定でシェルの言語を操作する
+defaults write NSGlobalDomain AppleLanguages -array "ja" "en"
+defaults write NSGlobalDomain AppleLocale -string "ja_JP@currency=JPY"
+defaults write NSGlobalDomain AppleMeasurementUnits -string "Centimeters"
+defaults write NSGlobalDomain AppleMetricUnits -bool true
+
+# 起動画面の右上に言語メニューを表示する
+sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
+
+# タイムゾーンを設定する。他の値は `sudo systemsetup -listtimezones` で確認
+sudo systemsetup -settimezone "Asia/Tokyo" > /dev/null
+
+# ==== 以下は私は使っていないが本家にあった設定 ===
+
+# iTunes がキーボードメディアキーに反応しないようにする
+#launchctl unload -w /System/Library/LaunchAgents/com.apple.rcd.plist 2> /dev/null
+
+# トラックパッド: 右下コーナーを右クリックに割り当てる
+# defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadCornerSecondaryClick -int 2
+# defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadRightClick -bool true
+# defaults -currentHost write NSGlobalDomain com.apple.trackpad.trackpadCornerClickBehavior -int 1
+# defaults -currentHost write NSGlobalDomain com.apple.trackpad.enableSecondaryClick -bool true
+
+# 「ナチュラル」（Lion スタイル）スクロールを無効にする
+# defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
+
+# Bluetooth ヘッドフォン/ヘッドセットの音質を向上させる
+# defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+
+
+###############################################################################
+# 省エネルギー設定                                                               #
+###############################################################################
+
+# 蓋を開けたときにスリープ解除する
+sudo pmset -a lidwake 1
+
+# 15 分後にディスプレイをスリープさせる
+sudo pmset -a displaysleep 15
+
+# 充電中はマシンスリープを無効にする
+sudo pmset -c sleep 0
+
+# コンピュータスリープモードを無効にする（システム設定で充電中はマシンスリープを無効，念の為）
+sudo systemsetup -setcomputersleep Off > /dev/null
+
+# バッテリー駆動時は 30 分後にマシンをスリープさせる
+sudo pmset -b sleep 30
+
+# スタンバイ遅延を 3 時間に設定する（デフォルトは 1 時間）
+sudo pmset -a standbydelay 10800
+
+# ハイバネーションモード
+# 0: ハイバネーションを無効にする（スリープへの移行を高速化）
+# 3: RAM の内容をディスクにコピーし、電源喪失時もシステム状態を復元可能にする
+sudo pmset -a hibernatemode 0
+
+# スリープイメージファイルを削除してディスク容量を節約する
+# （上記を0に設定した場合は不必要なファイルなので設定推奨）
+sudo rm /private/var/vm/sleepimage
+# ゼロバイトのファイルを代わりに作成する…
+sudo touch /private/var/vm/sleepimage
+# …そして上書きできないようにする
+sudo chflags uchg /private/var/vm/sleepimage
+
+# ==== 以下は私は使っていないが本家にあった設定 ===
+# 電源喪失時に自動的に再起動する
+# sudo pmset -a autorestart 1
+
+# フリーズ時に自動的に再起動する
+# sudo systemsetup -setrestartfreeze on
+
+###############################################################################
+# 画面                                                                        #
+###############################################################################
+
+# スリープまたはスクリーンセーバー開始直後にパスワードを要求する
+defaults write com.apple.screensaver askForPassword -int 1
+defaults write com.apple.screensaver askForPasswordDelay -int 0
+
+# スクリーンショットを ~/Screenshots に保存する
+mkdir -p "${HOME}/Screenshots"
+defaults write com.apple.screencapture location -string "${HOME}/Screenshots"
+
+# スクリーンショットを PNG 形式で保存する（他の選択肢: BMP、GIF、JPG、PDF、TIFF）
+defaults write com.apple.screencapture type -string "png"
+
+# スクリーンショットの影を無効にする
+defaults write com.apple.screencapture disable-shadow -bool true
+
+
+# ==== 以下は私は使っていないが本家にあった設定 ===
+# Apple 製以外の LCD でサブピクセルフォントレンダリングを有効にする
+# 参照: https://github.com/kevinSuttle/macOS-Defaults/issues/17#issuecomment-266633501
+# defaults write NSGlobalDomain AppleFontSmoothing -int 1
+
+# HiDPI ディスプレイモードを有効にする（再起動が必要）
+# sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+
+###############################################################################
+# Finder                                                                      #
+###############################################################################
+
+# Finder: ⌘ + Q で終了できるようにする（デスクトップアイコンも非表示になる）
+# defaults write com.apple.finder QuitMenuItem -bool true
+
+# Finder: ウィンドウアニメーションと情報取得アニメーションを無効にする
+defaults write com.apple.finder DisableAllAnimations -bool true
+
+# 新しい Finder ウィンドウのデフォルト場所をデスクトップに設定する
+# 他のパスは `PfLo` と `file:///フルパス/` を使う
+defaults write com.apple.finder NewWindowTarget -string "PfHm"
+defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}/"
+
+# デスクトップにハードドライブ・サーバー・リムーバブルメディアのアイコンを表示する
+defaults write com.apple.finder ShowExternalHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowHardDrivesOnDesktop -bool true
+defaults write com.apple.finder ShowMountedServersOnDesktop -bool true
+defaults write com.apple.finder ShowRemovableMediaOnDesktop -bool true
+
+# Finder: 隠しファイルをデフォルトで表示する
+#defaults write com.apple.finder AppleShowAllFiles -bool true
+
+# Finder: すべてのファイル拡張子を表示する
+defaults write NSGlobalDomain AppleShowAllExtensions -bool true
+
+# Finder: ステータスバーを表示する
+defaults write com.apple.finder ShowStatusBar -bool true
+
+# Finder: パスバーを表示する
+defaults write com.apple.finder ShowPathbar -bool true
+
+# Finder ウィンドウのタイトルに完全な POSIX パスを表示する
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+
+# 名前順ソート時にフォルダを先頭に表示する
+defaults write com.apple.finder _FXSortFoldersFirst -bool true
+
+# 検索時はデフォルトで現在のフォルダを検索する
+defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
+
+# ファイル拡張子変更時の警告を無効にする
+defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
+
+# フォルダのスプリングローディングを有効にする
+defaults write NSGlobalDomain com.apple.springing.enabled -bool true
+
+# フォルダのスプリングローディング遅延を削除する
+defaults write NSGlobalDomain com.apple.springing.delay -float 0
+
+# ネットワークや USB ボリュームに .DS_Store ファイルを作成しない
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
+defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
+
+# ディスクイメージの検証を無効にする
+# defaults write com.apple.frameworks.diskimages skip-verify -bool true
+# defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
+# defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
+
+# ボリュームマウント時に新しい Finder ウィンドウを自動的に開く
+defaults write com.apple.frameworks.diskimages auto-open-ro-root -bool true
+defaults write com.apple.frameworks.diskimages auto-open-rw-root -bool true
+defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
+
+# デスクトップやアイコンビューでグリッドスナップを有効にする
+/usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
+/usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
+/usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
+
+# デスクトップやアイコンビューのグリッド間隔を広げる
+/usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:gridSpacing 100" ~/Library/Preferences/com.apple.finder.plist
+/usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:gridSpacing 100" ~/Library/Preferences/com.apple.finder.plist
+/usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:gridSpacing 100" ~/Library/Preferences/com.apple.finder.plist
+
+# デスクトップやアイコンビューのアイコンサイズを大きくする
+/usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
+/usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
+/usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:iconSize 80" ~/Library/Preferences/com.apple.finder.plist
+
+# すべての Finder ウィンドウでデフォルトをリスト表示にする
+# 他のビューモードの 4 文字コード: `icnv`、`clmv`、`glyv`
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+
+# イーサネット経由および非対応 Mac での AirDrop を有効にする
+defaults write com.apple.NetworkBrowser BrowseAllInterfaces -bool true
+
+# ~/Library フォルダを表示する
+chflags nohidden ~/Library && xattr -d com.apple.FinderInfo ~/Library
+
+# /Volumes フォルダを表示する
+sudo chflags nohidden /Volumes
+
+# 以下のファイル情報パネルを展開した状態にする:
+# 「一般」「このアプリケーションで開く」「共有とアクセス権」
+defaults write com.apple.finder FXInfoPanesExpanded -dict \
+	General -bool true \
+	OpenWith -bool true \
+	Privileges -bool true
+
+# ==== 以下は私は使っていないが本家にあった設定 ===
+
+# デスクトップやアイコンビューでアイコン近くにアイテム情報を表示する
+# /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
+# /usr/libexec/PlistBuddy -c "Set :FK_StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
+# /usr/libexec/PlistBuddy -c "Set :StandardViewSettings:IconViewSettings:showItemInfo true" ~/Library/Preferences/com.apple.finder.plist
+
+# デスクトップのアイコン右側にアイテム情報を表示する
+# /usr/libexec/PlistBuddy -c "Set DesktopViewSettings:IconViewSettings:labelOnBottom false" ~/Library/Preferences/com.apple.finder.plist
+
+
+# ゴミ箱を空にする前の警告を無効にする
+# defaults write com.apple.finder WarnOnEmptyTrash -bool false
+
+# Finder の Dropbox 緑チェックマークアイコンを削除する
+# file=/Applications/Dropbox.app/Contents/Resources/emblem-dropbox-uptodate.icns
+# [ -e "${file}" ] && mv -f "${file}" "${file}.bak"
+
+###############################################################################
+# Dock、Dashboard、ホットコーナー                                              #
+###############################################################################
+
+# Dock のスタックグリッドビューでホバー時にハイライトを有効にする
+defaults write com.apple.dock mouse-over-hilite-stack -bool true
+
+# Dock アイコンのサイズを 36 ピクセルに設定する
+defaults write com.apple.dock tilesize -int 36
+
+# ウィンドウの最小化/最大化エフェクトを変更する
+# defaults write com.apple.dock mineffect -string "scale"
+
+# ウィンドウをアプリケーションのアイコンに最小化する
+# defaults write com.apple.dock minimize-to-application -bool true
+
+# すべての Dock アイテムのスプリングローディングを有効にする
+defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
+
+# Dock で起動中のアプリにインジケーターライトを表示する
+defaults write com.apple.dock show-process-indicators -bool true
+
+# Dock からデフォルトのアプリアイコンをすべて削除する
+# 新しい Mac のセットアップ時や Dock からアプリを起動しない場合に有用
+#defaults write com.apple.dock persistent-apps -array
+
+# Dock に開いているアプリのみ表示する
+#defaults write com.apple.dock static-only -bool true
+
+# Dock からアプリを開くときのアニメーションを無効にする
+defaults write com.apple.dock launchanim -bool false
+
+# Mission Control のアニメーションを高速化する
+defaults write com.apple.dock expose-animation-duration -float 0.1
+
+# Mission Control でアプリごとにウィンドウをグループ化しない
+# （旧 Exposé の動作を使用する）
+# defaults write com.apple.dock expose-group-by-app -bool false
+
+# Dashboard を無効にする
+# defaults write com.apple.dashboard mcx-disabled -bool true
+
+# Dashboard を Space として表示しない
+# defaults write com.apple.dock dashboard-in-overlay -bool true
+
+# 最近の使用状況に基づいて Space を自動的に並べ替えない
+defaults write com.apple.dock mru-spaces -bool false
+
+# Dock の自動非表示遅延を削除する
+defaults write com.apple.dock autohide-delay -float 0
+# Dock の表示/非表示アニメーションを削除する
+# defaults write com.apple.dock autohide-time-modifier -float 0
+
+# Dock を自動的に隠す/表示する
+defaults write com.apple.dock autohide -bool true
+
+# 非表示のアプリの Dock アイコンを半透明にする
+# defaults write com.apple.dock showhidden -bool true
+
+# Dock に最近使ったアプリを表示しない
+# defaults write com.apple.dock show-recents -bool false
+
+# Launchpad ジェスチャー（親指と 3 本指でピンチ）を無効にする
+#defaults write com.apple.dock showLaunchpadGestureEnabled -int 0
+
+# Launchpad をリセットする（デスクトップ壁紙は維持）
+# find "${HOME}/Library/Application Support/Dock" -name "*-*.db" -maxdepth 1 -delete
+
+# iOS & Watch シミュレーターを Launchpad に追加する
+sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator.app" "/Applications/Simulator.app"
+sudo ln -sf "/Applications/Xcode.app/Contents/Developer/Applications/Simulator (Watch).app" "/Applications/Simulator (Watch).app"
+
+# Dock の左側（アプリ側）にスペーサーを追加する
+#defaults write com.apple.dock persistent-apps -array-add '{tile-data={}; tile-type="spacer-tile";}'
+# Dock の右側（ゴミ箱側）にスペーサーを追加する
+#defaults write com.apple.dock persistent-others -array-add '{tile-data={}; tile-type="spacer-tile";}'
+
+# ホットコーナー
+# 指定可能な値:
+#  0: 何もしない
+#  2: Mission Control
+#  3: アプリケーションウィンドウを表示
+#  4: デスクトップ
+#  5: スクリーンセーバーを開始
+#  6: スクリーンセーバーを無効化
+#  7: Dashboard
+# 10: ディスプレイをスリープ
+# 11: Launchpad
+# 12: 通知センター
+# 13: 画面をロック
+# 左上コーナー → Mission Control
+# defaults write com.apple.dock wvous-tl-corner -int 2
+# defaults write com.apple.dock wvous-tl-modifier -int 0
+# 右上コーナー → デスクトップ
+defaults write com.apple.dock wvous-tr-corner -int 4
+defaults write com.apple.dock wvous-tr-modifier -int 0
+# 左下コーナー → スクリーンセーバーを開始
+# defaults write com.apple.dock wvous-bl-corner -int 5
+# defaults write com.apple.dock wvous-bl-modifier -int 0
+
+###############################################################################
+# Safari & WebKit                                                             #
+###############################################################################
+
+# プライバシー: Apple に検索クエリを送信しない
+# defaults write com.apple.Safari UniversalSearchEnabled -bool false
+# defaults write com.apple.Safari SuppressSearchSuggestions -bool true
+
+# Tab キーでウェブページの各アイテムをハイライトする
+defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
+
+# アドレスバーに完全な URL を表示する（スキームは引き続き非表示）
+defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
+
+# Safari のホームページを `about:blank` に設定して高速化する
+defaults write com.apple.Safari HomePage -string "about:blank"
+
+# ダウンロード後に「安全な」ファイルを自動的に開かないようにする
+defaults write com.apple.Safari AutoOpenSafeDownloads -bool false
+
+# Backspace キーで履歴の前のページに戻れるようにする
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2BackspaceKeyNavigationEnabled -bool true
+
+# Safari のブックマークバーをデフォルトで非表示にする
+# defaults write com.apple.Safari ShowFavoritesBar -bool false
+
+# Safari のトップサイトのサイドバーを非表示にする
+defaults write com.apple.Safari ShowSidebarInTopSites -bool false
+
+# Safari の履歴とトップサイトのサムネイルキャッシュを無効にする
+defaults write com.apple.Safari DebugSnapshotsUpdatePolicy -int 2
+
+# Safari のデバッグメニューを有効にする
+defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
+
+# Safari の検索バナーを「前方一致」ではなく「含む」に設定する
+defaults write com.apple.Safari FindOnPageMatchesWordStartsOnly -bool false
+
+# Safari のブックマークバーから不要なアイコンを削除する
+# defaults write com.apple.Safari ProxiesInBookmarksBar "()"
+
+# Safari の開発メニューと Web インスペクターを有効にする
+defaults write com.apple.Safari IncludeDevelopMenu -bool true
+defaults write com.apple.Safari WebKitDeveloperExtrasEnabledPreferenceKey -bool true
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2DeveloperExtrasEnabled -bool true
+
+# Web ビューのコンテキストメニューに Web インスペクターを追加する
+# defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
+
+# 継続スペルチェックを有効にする
+defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
+# 自動修正を無効にする
+defaults write com.apple.Safari WebAutomaticSpellingCorrectionEnabled -bool false
+
+# AutoFill を無効にする
+defaults write com.apple.Safari AutoFillFromAddressBook -bool false
+defaults write com.apple.Safari AutoFillPasswords -bool false
+defaults write com.apple.Safari AutoFillCreditCardData -bool false
+defaults write com.apple.Safari AutoFillMiscellaneousForms -bool false
+
+# 詐欺サイトについて警告する
+defaults write com.apple.Safari WarnAboutFraudulentWebsites -bool true
+
+# プラグインを無効にする
+defaults write com.apple.Safari WebKitPluginsEnabled -bool false
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2PluginsEnabled -bool false
+
+# Java を無効にする
+defaults write com.apple.Safari WebKitJavaEnabled -bool false
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabled -bool false
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaEnabledForLocalFiles -bool false
+
+# ポップアップウィンドウをブロックする
+defaults write com.apple.Safari WebKitJavaScriptCanOpenWindowsAutomatically -bool false
+defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2JavaScriptCanOpenWindowsAutomatically -bool false
+
+# 動画の自動再生を無効にする
+#defaults write com.apple.Safari WebKitMediaPlaybackAllowsInline -bool false
+#defaults write com.apple.SafariTechnologyPreview WebKitMediaPlaybackAllowsInline -bool false
+#defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
+#defaults write com.apple.SafariTechnologyPreview com.apple.Safari.ContentPageGroupIdentifier.WebKit2AllowsInlineMediaPlayback -bool false
+
+# 「トラッキングしない」を有効にする
+defaults write com.apple.Safari SendDoNotTrackHTTPHeader -bool true
+
+# 拡張機能を自動的に更新する
+# defaults write com.apple.Safari InstallExtensionUpdatesAutomatically -bool true
+
+###############################################################################
+# Mail                                                                        #
+###############################################################################
+
+# Mail.app の送信・返信アニメーションを無効にする
+# defaults write com.apple.mail DisableReplyAnimations -bool true
+# defaults write com.apple.mail DisableSendAnimations -bool true
+
+# Mail.app でメールアドレスを `Foo Bar <foo@example.com>` ではなく `foo@example.com` としてコピーする
+defaults write com.apple.mail AddressesIncludeNameOnPasteboard -bool false
+
+# Mail.app でメール送信のキーボードショートカット ⌘ + Enter を追加する
+# defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Send" "@\U21a9"
+
+# メールをスレッドモードで表示し、日付順（古い順）に並べる
+# defaults write com.apple.mail DraftsViewerAttributes -dict-add "DisplayInThreadedMode" -string "yes"
+# defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortedDescending" -string "yes"
+# defaults write com.apple.mail DraftsViewerAttributes -dict-add "SortOrder" -string "received-date"
+
+# インライン添付ファイルを無効にする（アイコンのみ表示）
+# defaults write com.apple.mail DisableInlineAttachmentViewing -bool true
+
+# 自動スペルチェックを無効にする
+# defaults write com.apple.mail SpellCheckingBehavior -string "NoSpellCheckingEnabled"
+
+###############################################################################
+# Spotlight                                                                   #
+###############################################################################
+
+# # Spotlight のトレイアイコン（とヘルパー）を非表示にする
+# #sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
+# # まだインデックスが作成されていない新しいボリュームのインデックス作成を無効にする
+# # 特定のボリュームのインデックス作成停止は `sudo mdutil -i off "/Volumes/foo"` を使用
+# sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
+# # インデックスの順序を変更し、一部の検索結果を無効にする
+# # Yosemite 固有の検索結果（macOS 10.9 以前を使用している場合は削除してください）:
+# # 	MENU_DEFINITION
+# # 	MENU_CONVERSION
+# # 	MENU_EXPRESSION
+# # 	MENU_SPOTLIGHT_SUGGESTIONS（Apple に検索クエリを送信）
+# # 	MENU_WEBSEARCH             （Apple に検索クエリを送信）
+# # 	MENU_OTHER
+# defaults write com.apple.spotlight orderedItems -array \
+# 	'{"enabled" = 1;"name" = "APPLICATIONS";}' \
+# 	'{"enabled" = 1;"name" = "SYSTEM_PREFS";}' \
+# 	'{"enabled" = 1;"name" = "DIRECTORIES";}' \
+# 	'{"enabled" = 1;"name" = "PDF";}' \
+# 	'{"enabled" = 1;"name" = "FONTS";}' \
+# 	'{"enabled" = 0;"name" = "DOCUMENTS";}' \
+# 	'{"enabled" = 0;"name" = "MESSAGES";}' \
+# 	'{"enabled" = 0;"name" = "CONTACT";}' \
+# 	'{"enabled" = 0;"name" = "EVENT_TODO";}' \
+# 	'{"enabled" = 0;"name" = "IMAGES";}' \
+# 	'{"enabled" = 0;"name" = "BOOKMARKS";}' \
+# 	'{"enabled" = 0;"name" = "MUSIC";}' \
+# 	'{"enabled" = 0;"name" = "MOVIES";}' \
+# 	'{"enabled" = 0;"name" = "PRESENTATIONS";}' \
+# 	'{"enabled" = 0;"name" = "SPREADSHEETS";}' \
+# 	'{"enabled" = 0;"name" = "SOURCE";}' \
+# 	'{"enabled" = 0;"name" = "MENU_DEFINITION";}' \
+# 	'{"enabled" = 0;"name" = "MENU_OTHER";}' \
+# 	'{"enabled" = 0;"name" = "MENU_CONVERSION";}' \
+# 	'{"enabled" = 0;"name" = "MENU_EXPRESSION";}' \
+# 	'{"enabled" = 0;"name" = "MENU_WEBSEARCH";}' \
+# 	'{"enabled" = 0;"name" = "MENU_SPOTLIGHT_SUGGESTIONS";}'
+# # 新しい設定を読み込んでからインデックスを再構築する
+# killall mds > /dev/null 2>&1
+# # メインボリュームのインデックス作成が有効であることを確認する
+# sudo mdutil -i on / > /dev/null
+# # インデックスをゼロから再構築する
+# sudo mdutil -E / > /dev/null
+
+###############################################################################
+# Terminal & iTerm 2                                                          #
+###############################################################################
+
+# Terminal.app で UTF-8 のみ使用する
+defaults write com.apple.terminal StringEncodings -array 4
+
+# Terminal.app のデフォルトテーマを Solarized Dark の改変版にする
+# osascript <<EOD
+
+# tell application "Terminal"
+
+# 	local allOpenedWindows
+# 	local initialOpenedWindows
+# 	local windowID
+# 	set themeName to "Solarized Dark xterm-256color"
+
+# 	(* 開いているすべてのターミナルウィンドウの ID を保存する *)
+# 	set initialOpenedWindows to id of every window
+
+# 	(* カスタムテーマを開いて利用可能なテーマリストに追加する
+# 	   （注: 追加の端末ウィンドウが 2 つ開く） *)
+# 	do shell script "open '$HOME/init/" & themeName & ".terminal'"
+
+# 	(* カスタムテーマが追加されるまで少し待つ *)
+# 	delay 1
+
+# 	(* カスタムテーマをデフォルトの端末テーマに設定する *)
+# 	set default settings to settings set themeName
+
+# 	(* 現在開いているすべての端末ウィンドウの ID を取得する *)
+# 	set allOpenedWindows to id of every window
+
+# 	repeat with windowID in allOpenedWindows
+
+# 		(* カスタムテーマ追加のために開かれた追加ウィンドウを閉じる *)
+# 		if initialOpenedWindows does not contain windowID then
+# 			close (every window whose id is windowID)
+
+# 		(* 最初から開いていた端末ウィンドウのテーマを変更して
+# 		   カスタムテーマ適用のためにウィンドウを閉じる必要をなくす *)
+# 		else
+# 			set current settings of tabs of (every window whose id is windowID) to settings set themeName
+# 		end if
+
+# 	end repeat
+
+# end tell
+
+# EOD
+
+# Terminal.app と X11 アプリで「フォーカスフォローマウス」を有効にする
+# （ウィンドウにホバーするだけでクリックせずに入力できる）
+#defaults write com.apple.terminal FocusFollowsMouse -bool true
+#defaults write org.x.X11 wm_ffm -bool true
+
+# Terminal.app でセキュアキーボード入力を有効にする
+# 参照: https://security.stackexchange.com/a/47786/8918
+# defaults write com.apple.terminal SecureKeyboardEntry -bool true
+
+# 邪魔なラインマークを無効にする
+# defaults write com.apple.Terminal ShowLineMarks -int 0
+
+# iTerm 用の Solarized Dark テーマをインストールする
+# open "${HOME}/init/Solarized Dark.itermcolors"
+
+# iTerm 終了時の確認プロンプトを表示しない
+# defaults write com.googlecode.iterm2 PromptOnQuit -bool false
+
+###############################################################################
+# Time Machine                                                                #
+###############################################################################
+
+# 新しいハードドライブをバックアップボリュームとして使用するか確認しない
+# defaults write com.apple.TimeMachine DoNotOfferNewDisksForBackup -bool true
+
+# ローカルの Time Machine バックアップを無効にする
+# hash tmutil &> /dev/null && sudo tmutil disablelocal
+
+###############################################################################
+# アクティビティモニタ                                                         #
+###############################################################################
+
+# アクティビティモニタ起動時にメインウィンドウを表示する
+defaults write com.apple.ActivityMonitor OpenMainWindow -bool true
+
+# アクティビティモニタの Dock アイコンに CPU 使用率を視覚化する
+defaults write com.apple.ActivityMonitor IconType -int 5
+
+# アクティビティモニタにすべてのプロセスを表示する
+defaults write com.apple.ActivityMonitor ShowCategory -int 0
+
+# アクティビティモニタの結果を CPU 使用率でソートする
+defaults write com.apple.ActivityMonitor SortColumn -string "CPUUsage"
+defaults write com.apple.ActivityMonitor SortDirection -int 0
+
+###############################################################################
+# アドレスブック、Dashboard、iCal、TextEdit、ディスクユーティリティ            #
+###############################################################################
+
+# アドレスブックのデバッグメニューを有効にする
+# defaults write com.apple.addressbook ABShowDebugMenu -bool true
+
+# Dashboard の開発者モードを有効にする（ウィジェットをデスクトップに保持できる）
+# defaults write com.apple.dashboard devmode -bool true
+
+# iCal のデバッグメニューを有効にする（10.8 より前）
+# defaults write com.apple.iCal IncludeDebugMenu -bool true
+
+# TextEdit の新規ドキュメントをプレーンテキストモードにする
+defaults write com.apple.TextEdit RichText -int 0
+# TextEdit でファイルを UTF-8 として開き・保存する
+defaults write com.apple.TextEdit PlainTextEncoding -int 4
+defaults write com.apple.TextEdit PlainTextEncodingForWrite -int 4
+
+# ディスクユーティリティのデバッグメニューを有効にする
+defaults write com.apple.DiskUtility DUDebugMenuEnabled -bool true
+defaults write com.apple.DiskUtility advanced-image-options -bool true
+
+# QuickTime Player で動画を開いたときに自動再生する
+defaults write com.apple.QuickTimePlayerX MGPlayMovieOnOpen -bool true
+
+###############################################################################
+# Mac App Store                                                               #
+###############################################################################
+
+# Mac App Store で WebKit 開発者ツールを有効にする
+# defaults write com.apple.appstore WebKitDeveloperExtras -bool true
+
+# Mac App Store のデバッグメニューを有効にする
+# defaults write com.apple.appstore ShowDebugMenu -bool true
+
+# 自動アップデートチェックを有効にする
+defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+
+# ソフトウェアアップデートを週1回ではなく毎日チェックする
+# defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
+
+# 新しく利用可能なアップデートをバックグラウンドでダウンロードする
+defaults write com.apple.SoftwareUpdate AutomaticDownload -int 1
+
+# システムデータファイルとセキュリティアップデートをインストールする
+defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -int 1
+
+# 他の Mac で購入したアプリを自動的にダウンロードする
+# defaults write com.apple.SoftwareUpdate ConfigDataInstall -int 1
+
+# アプリの自動アップデートをオンにする
+# defaults write com.apple.commerce AutoUpdate -bool true
+
+# macOS アップデート時に App Store がマシンを再起動できるようにする
+# defaults write com.apple.commerce AutoUpdateRestartRequired -bool true
+
+###############################################################################
+# 写真                                                                        #
+###############################################################################
+
+# デバイスを接続したときに写真アプリが自動的に開かないようにする
+defaults -currentHost write com.apple.ImageCapture disableHotPlug -bool true
+
+###############################################################################
+# メッセージ                                                                   #
+###############################################################################
+
+# 絵文字の自動置換を無効にする（プレーンテキストの顔文字を使用）
+defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticEmojiSubstitutionEnablediMessage" -bool false
+
+# コードを含むメッセージで邪魔なスマートクォートを無効にする
+defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticQuoteSubstitutionEnabled" -bool false
+
+# 継続スペルチェックを無効にする
+defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false
+
+###############################################################################
+# Google Chrome & Google Chrome Canary                                        #
+###############################################################################
+
+# トラックパッドで過敏なバックスワイプを無効にする
+defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
+defaults write com.google.Chrome.canary AppleEnableSwipeNavigateWithScrolls -bool false
+
+# Magic Mouse で過敏なバックスワイプを無効にする
+defaults write com.google.Chrome AppleEnableMouseSwipeNavigateWithScrolls -bool false
+defaults write com.google.Chrome.canary AppleEnableMouseSwipeNavigateWithScrolls -bool false
+
+# システム標準の印刷プレビューダイアログを使用する
+defaults write com.google.Chrome DisablePrintPreview -bool true
+defaults write com.google.Chrome.canary DisablePrintPreview -bool true
+
+# 印刷ダイアログをデフォルトで展開した状態にする
+defaults write com.google.Chrome PMPrintingExpandedStateForPrint2 -bool true
+defaults write com.google.Chrome.canary PMPrintingExpandedStateForPrint2 -bool true
+
+###############################################################################
+# GPGMail 2                                                                   #
+###############################################################################
+
+# デフォルトでメールへの署名を無効にする
+defaults write ~/Library/Preferences/org.gpgtools.gpgmail SignNewEmailsByDefault -bool false
+
+###############################################################################
+# Opera & Opera Developer                                                     #
+###############################################################################
+
+# 印刷ダイアログをデフォルトで展開した状態にする
+defaults write com.operasoftware.Opera PMPrintingExpandedStateForPrint2 -boolean true
+defaults write com.operasoftware.OperaDeveloper PMPrintingExpandedStateForPrint2 -boolean true
+
+###############################################################################
+# SizeUp.app                                                                  #
+###############################################################################
+
+# ログイン時に SizeUp を起動する
+defaults write com.irradiatedsoftware.SizeUp StartAtLogin -bool true
+
+# 次回起動時に環境設定ウィンドウを表示しない
+defaults write com.irradiatedsoftware.SizeUp ShowPrefsOnNextStart -bool false
+
+###############################################################################
+# Sublime Text                                                                #
+###############################################################################
+
+# Sublime Text の設定をインストールする
+cp -r init/Preferences.sublime-settings ~/Library/Application\ Support/Sublime\ Text*/Packages/User/Preferences.sublime-settings 2> /dev/null
+
+###############################################################################
+# Spectacle.app                                                               #
+###############################################################################
+
+# 好みのキーボードショートカットを設定する
+cp -r init/spectacle.json ~/Library/Application\ Support/Spectacle/Shortcuts.json 2> /dev/null
+
+###############################################################################
+# Transmission.app                                                            #
+###############################################################################
+
+# 未完了のダウンロードを `~/Documents/Torrents` に保存する
+defaults write org.m0k.transmission UseIncompleteDownloadFolder -bool true
+defaults write org.m0k.transmission IncompleteDownloadFolder -string "${HOME}/Documents/Torrents"
+
+# 完了したダウンロードを `~/Downloads` に保存する
+defaults write org.m0k.transmission DownloadLocationConstant -bool true
+
+# ダウンロード前に確認プロンプトを表示しない
+defaults write org.m0k.transmission DownloadAsk -bool false
+defaults write org.m0k.transmission MagnetOpenAsk -bool false
+
+# ダウンロード中でないアクティブな転送を削除する前に確認しない
+defaults write org.m0k.transmission CheckRemoveDownloading -bool true
+
+# 元のトレントファイルをゴミ箱に移動する
+defaults write org.m0k.transmission DeleteOriginalTorrent -bool true
+
+# 寄付メッセージを非表示にする
+defaults write org.m0k.transmission WarningDonate -bool false
+# 法的免責事項を非表示にする
+defaults write org.m0k.transmission WarningLegal -bool false
+
+# IP ブロックリスト
+# ソース: https://giuliomac.wordpress.com/2014/02/19/best-blocklist-for-transmission/
+defaults write org.m0k.transmission BlocklistNew -bool true
+defaults write org.m0k.transmission BlocklistURL -string "http://john.bitsurge.net/public/biglist.p2p.gz"
+defaults write org.m0k.transmission BlocklistAutoUpdate -bool true
+
+# 起動時にポートをランダム化する
+defaults write org.m0k.transmission RandomPort -bool true
+
+###############################################################################
+# Twitter.app                                                                 #
+###############################################################################
+
+# コードツイートで邪魔なスマートクォートを無効にする
+defaults write com.twitter.twitter-mac AutomaticQuoteSubstitutionEnabled -bool false
+
+# メニューバーアイコンをクリックしたときにアプリウィンドウを表示する
+defaults write com.twitter.twitter-mac MenuItemBehavior -int 1
+
+# 隠し「開発」メニューを有効にする
+defaults write com.twitter.twitter-mac ShowDevelopMenu -bool true
+
+# リンクをバックグラウンドで開く
+defaults write com.twitter.twitter-mac openLinksInBackground -bool true
+
+# `Esc` キーで「新しいツイート」ウィンドウを閉じられるようにする
+defaults write com.twitter.twitter-mac ESCClosesComposeWindow -bool true
+
+# Twitter ハンドルではなくフルネームを表示する
+defaults write com.twitter.twitter-mac ShowFullNames -bool true
+
+# 最前面でない場合はアプリをバックグラウンドに隠す
+defaults write com.twitter.twitter-mac HideInBackground -bool true
+
+###############################################################################
+# Tweetbot.app                                                                #
+###############################################################################
+
+# 遅い t.co URL 短縮サービスをバイパスする
+defaults write com.tapbots.TweetbotMac OpenURLsDirectly -bool true
+
+###############################################################################
+# 影響を受けるアプリケーションを再起動する                                      #
+###############################################################################
+
+for app in "Activity Monitor" \
+	"Address Book" \
+	"Calendar" \
+	"cfprefsd" \
+	"Contacts" \
+	"Dock" \
+	"Finder" \
+	"Google Chrome Canary" \
+	"Google Chrome" \
+	"Mail" \
+	"Messages" \
+	"Opera" \
+	"Photos" \
+	"Safari" \
+	"SizeUp" \
+	"Spectacle" \
+	"SystemUIServer" \
+	"Terminal" \
+	"Transmission" \
+	"Tweetbot" \
+	"Twitter" \
+	"iCal"; do
+	killall "${app}" &> /dev/null
+done
+echo "完了。一部の変更はログアウト/再起動後に反映されます。"
