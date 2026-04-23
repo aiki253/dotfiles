@@ -1,0 +1,52 @@
+# =============================
+# 環境変数
+# =============================
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+export EDITOR="vim"
+export VISUAL="$EDITOR"
+export PATH="$HOME/.local/bin:$PATH"
+
+# =============================
+# 履歴
+# =============================
+HISTFILE="$HOME/.bash_history"
+HISTSIZE=50000
+HISTFILESIZE=50000
+HISTCONTROL=ignorealldups
+
+# =============================
+# エイリアス
+# =============================
+alias grep='grep --color=auto'
+alias ..='cd ..'
+alias ...='cd ../..'
+
+# =============================
+# 関数
+# =============================
+mkcd() { mkdir -p "$1" && cd "$1"; }
+
+# =============================
+# pixi / uv
+# =============================
+[ -d "$HOME/.pixi/bin" ] && export PATH="$HOME/.pixi/bin:$PATH"
+
+# =============================
+# ROS2（インストール済みなら自動有効）
+# =============================
+[ -f /opt/ros/humble/setup.bash ] && source /opt/ros/humble/setup.bash
+
+# =============================
+# CUDA（インストール済みなら自動有効）
+# =============================
+if [ -d /usr/local/cuda ]; then
+  export PATH="/usr/local/cuda/bin:$PATH"
+  export LD_LIBRARY_PATH="/usr/local/cuda/lib64:$LD_LIBRARY_PATH"
+fi
+
+# =============================
+# プロンプト
+# =============================
+[ -f /usr/lib/git-core/git-sh-prompt ] && source /usr/lib/git-core/git-sh-prompt
+PS1='\[\e[36m\]\u@\h\[\e[0m\]:\[\e[33m\]\w\[\e[32m\]$(__git_ps1 " (%s)")\[\e[0m\] $ '
