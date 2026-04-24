@@ -51,6 +51,19 @@ cask "google-chrome"
 cask "slack"
 cask "zoom"
 cask "discord"
+cask "microsoft-teams"
+cask "line"
+
+# Productivity
+cask "todoist"
+
+# Microsoft Office
+cask "microsoft-word"
+cask "microsoft-excel"
+cask "microsoft-powerpoint"
+
+# VPN / Network
+cask "tailscale"
 
 # LaTeX
 cask "tsung-ju/iguanatexmac/iguanatexmac"
