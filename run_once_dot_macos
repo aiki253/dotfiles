@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# デバッグ: どのコマンドで落ちているか特定するためのログ
+exec > >(tee -a /tmp/macos_script.log) 2>&1
+set -x
+
 # ~/.macos — https://mths.be/macos
 
 # 設定を上書きされないよう、開いているシステム環境設定を閉じる
