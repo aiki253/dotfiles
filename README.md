@@ -2,12 +2,6 @@
 
 ## macOS
 
-**1. Homebrew をインストール**
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-**2. install.sh を実行**
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/aiki253/dotfiles/main/install.sh)
 ```
