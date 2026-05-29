@@ -31,7 +31,7 @@ esac
 if chezmoi source-path &>/dev/null; then
   git -C "$(chezmoi source-path)" pull --ff-only 2>/dev/null || true
 fi
-chezmoi init --apply git@github.com:aiki253/dotfiles.git
+chezmoi init --apply https://github.com/aiki253/dotfiles.git
 
 # ===========================
 # パッケージインストール
