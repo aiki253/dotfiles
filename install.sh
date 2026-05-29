@@ -35,7 +35,12 @@ chezmoi init --apply git@github.com:aiki253/dotfiles.git
 # ===========================
 case "$(uname -s)" in
   Darwin)
+    echo "=== brew bundle 開始 ==="
+    # OrbStack 等の VM ツールが sleepimage を削除しようとする際の
+    # interactive プロンプトを防ぐため、先に immutable フラグを外す
+    sudo chflags nouchg /private/var/vm/sleepimage 2>/dev/null || true
     brew bundle --file="$(chezmoi source-path)/Brewfile"
+    echo "=== brew bundle 完了 ==="
     ;;
 
   Linux)
