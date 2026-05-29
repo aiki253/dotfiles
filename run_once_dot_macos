@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# デバッグ: どのコマンドで落ちているか特定するためのログ
-exec > >(tee -a /tmp/macos_script.log) 2>&1
-set -x
-
 # ~/.macos — https://mths.be/macos
 
 # 設定を上書きされないよう、開いているシステム環境設定を閉じる
@@ -132,7 +128,7 @@ defaults write NSGlobalDomain AppleMetricUnits -bool true
 sudo defaults write /Library/Preferences/com.apple.loginwindow showInputMenu -bool true
 
 # タイムゾーンを設定する。他の値は `sudo systemsetup -listtimezones` で確認
-sudo systemsetup -settimezone "Asia/Tokyo" > /dev/null
+sudo systemsetup -settimezone "Asia/Tokyo" > /dev/null 2>&1 || true
 
 ###############################################################################
 # バッテリー設定                                                               #
@@ -144,17 +140,12 @@ sudo pmset -a lidwake 1
 # 15 分後にディスプレイをスリープさせる
 sudo pmset -a displaysleep 15
 
-# 充電中はマシンスリープを無効にする
-sudo pmset -c sleep 0
-
-# コンピュータスリープモードを無効にする（システム設定で充電中はマシンスリープを無効，念の為）
-sudo systemsetup -setcomputersleep Off > /dev/null
-
-# バッテリー駆動時は 30 分後にマシンをスリープさせる
-sudo pmset -b sleep 30
-
-# スタンバイ遅延を 3 時間に設定する（デフォルトは 1 時間）
-sudo pmset -a standbydelay 10800
+# 以下は M5 Mac / Sequoia 上で pmset が sleepimage を削除しようとし
+# ターミナルがクラッシュするためコメントアウト。手動で設定すること。
+# sudo pmset -c sleep 0
+# sudo systemsetup -setcomputersleep Off
+# sudo pmset -b sleep 30
+# sudo pmset -a standbydelay 10800
 
 # ハイバネーションモード
 # 0: ハイバネーションを無効にする（スリープへの移行を高速化）
