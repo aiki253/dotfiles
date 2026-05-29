@@ -21,12 +21,6 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 #sudo scutil --set LocalHostName "0x6D746873"
 #sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "0x6D746873"
 
-# 起動時のサウンドエフェクトを無効にする
-sudo nvram SystemAudioVolume=" "
-
-# Yosemite 以降でメニューバーなどの透明効果を無効にする
-defaults write com.apple.universalaccess reduceTransparency -bool true
-
 # サイドバーのアイコンサイズを中に設定する
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
 
@@ -66,6 +60,12 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 # 自動スペル修正を無効にする
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
+# 日本語IME: ライブ変換（スペースなし自動変換）を無効にする
+defaults write com.apple.inputmethod.Kotoeri JIMPrefLiveConversionKey -bool false
+
+# 日本語IME: 自動修正を無効にする
+defaults write com.apple.inputmethod.Kotoeri JIMPrefAutocorrectionKey -bool false
+
 
 ###############################################################################
 # トラックパッド、マウス、キーボード、Bluetooth、入力                                #
@@ -76,7 +76,6 @@ defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad Clicking -bool
 defaults -currentHost write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 defaults write NSGlobalDomain com.apple.mouse.tapBehavior -int 1
 
-#=====以下は未検証=====
 # 3本指ドラッグを有効にする
 defaults write com.apple.AppleMultitouchTrackpad TrackpadThreeFingerDrag -bool true
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadThreeFingerDrag -bool true
@@ -98,7 +97,6 @@ defaults write com.apple.AppleMultitouchTrackpad TrackpadFourFingerPinchGesture 
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFourFingerPinchGesture -int 2
 defaults write com.apple.AppleMultitouchTrackpad TrackpadFiveFingerPinchGesture -int 2
 defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFiveFingerPinchGesture -int 2
-#========ここまで==========
 
 # すべてのコントロールでキーボードフルアクセスを有効にする
 # （例: モーダルダイアログで Tab キーを使えるようにする）
@@ -222,11 +220,6 @@ defaults write NSGlobalDomain com.apple.springing.delay -float 0
 # ネットワークや USB ボリュームに .DS_Store ファイルを作成しない
 defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 defaults write com.apple.desktopservices DSDontWriteUSBStores -bool true
-
-# ボリュームマウント時に新しい Finder ウィンドウを自動的に開く
-defaults write com.apple.frameworks.diskimages auto-open-ro-root -bool true
-defaults write com.apple.frameworks.diskimages auto-open-rw-root -bool true
-defaults write com.apple.finder OpenWindowForNewRemovableDisk -bool true
 
 # デスクトップやアイコンビューでグリッドスナップを有効にする
 /usr/libexec/PlistBuddy -c "Set :DesktopViewSettings:IconViewSettings:arrangeBy grid" ~/Library/Preferences/com.apple.finder.plist
@@ -421,4 +414,4 @@ defaults write com.google.Chrome.canary AppleEnableSwipeNavigateWithScrolls -boo
 ###############################################################################
 
 echo "DONE. ログアウト/再起動後に変更が反映されます。"
-echo "（Dock・Finder・SystemUIServer を killall するとターミナルが落ちるため、再起動で代替してください）"
+echo "（手動で再起動してください）"
