@@ -1,9 +1,4 @@
 # =======================
-# Taps
-# =======================
-tap "tsung-ju/iguanatexmac"
-
-# =======================
 # CLI Tools
 # =======================
 
@@ -21,6 +16,9 @@ brew "ghostscript"
 
 # Database
 brew "postgresql@17", restart_service: :changed
+
+# Mac App Store CLI
+brew "mas"
 
 # 用途次第で有効化
 # brew "go"           # Go 開発するなら
@@ -41,6 +39,7 @@ cask "google-chrome"
 # cask "arc"
 
 # Utility
+cask "scroll-reverser"
 # cask "raycast"        # Spotlight 代替
 # cask "rectangle"      # ウィンドウ管理
 # cask "appcleaner"     # アンインストール
@@ -52,7 +51,10 @@ cask "slack"
 cask "zoom"
 cask "discord"
 cask "microsoft-teams"
-cask "line"
+
+# Mail
+cask "microsoft-outlook"
+cask "thunderbird"
 
 # Productivity
 cask "todoist"
@@ -65,11 +67,6 @@ cask "microsoft-powerpoint"
 # VPN / Network
 cask "tailscale"
 
-# LaTeX
-cask "tsung-ju/iguanatexmac/iguanatexmac"
-cask "tsung-ju/iguanatexmac/latexit-metadata"
-# cask "mactex-no-gui"  # LaTeX 環境(巨大、要るなら)
-
 # =======================
 # Container
 # =======================
@@ -78,8 +75,7 @@ cask "orbstack"
 # =======================
 # Mac App Store
 # =======================
-# brew "mas" を有効にすれば mas コマンドで App Store アプリも管理可能
-# brew "mas"
+mas "LINE", id: 539883307
 # mas "Xcode", id: 497799835
 # mas "Keynote", id: 409183694
 
