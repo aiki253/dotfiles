@@ -57,7 +57,7 @@ cask "microsoft-outlook"
 cask "thunderbird"
 
 # Productivity
-cask "todoist"
+cask "todoist-app"
 
 # Microsoft Office
 cask "microsoft-word"
@@ -65,7 +65,7 @@ cask "microsoft-excel"
 cask "microsoft-powerpoint"
 
 # VPN / Network
-cask "tailscale"
+cask "tailscale-app"
 
 # Display
 cask "displaylink"

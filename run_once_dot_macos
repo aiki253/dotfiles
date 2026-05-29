@@ -132,23 +132,20 @@ sudo systemsetup -settimezone "Asia/Tokyo" > /dev/null 2>&1 || true
 # バッテリー設定                                                               #
 ###############################################################################
 
-# バッテリー/スリープ設定はすべて pmset がターミナルをクラッシュさせるため
-# コメントアウト。システム設定 → バッテリー から手動で設定すること。
-# sudo pmset -a lidwake 1
-# sudo pmset -a displaysleep 15
-# sudo pmset -c sleep 0
-# sudo systemsetup -setcomputersleep Off
-# sudo pmset -b sleep 30
-# sudo pmset -a standbydelay 10800
+# スリープ設定
+sudo pmset -a lidwake 1
+sudo pmset -a displaysleep 15
+sudo pmset -c sleep 0            # 電源接続時はスリープしない
+sudo pmset -b sleep 30           # バッテリー時は30分でスリープ
+sudo pmset -a standbydelay 10800
 
-# ハイバネーションモード
-# 0: ハイバネーションを無効にする（スリープへの移行を高速化）
-# 3: RAM の内容をディスクにコピーし、電源喪失時もシステム状態を復元可能にする
-# sleepimage 削除プロンプトが出てターミナルが落ちるため無効化
+# コンピュータスリープを無効にする（電源接続時）
+sudo systemsetup -setcomputersleep Off > /dev/null 2>&1 || true
+
+# ハイバネーションモード: sleepimage削除プロンプトが出てスクリプトが止まるため無効化
 # sudo pmset -a hibernatemode 0
 
-# スリープイメージファイルの削除/固定は SIP 保護領域のため最近の macOS では
-# "Operation not permitted" で失敗する。無害化のためコメントアウト。
+# sleepimage の削除/固定は SIP 保護領域のため "Operation not permitted" で失敗する
 # sudo rm /private/var/vm/sleepimage
 # sudo touch /private/var/vm/sleepimage
 # sudo chflags uchg /private/var/vm/sleepimage
