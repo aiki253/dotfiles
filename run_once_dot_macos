@@ -134,14 +134,10 @@ sudo systemsetup -settimezone "Asia/Tokyo" > /dev/null 2>&1 || true
 # バッテリー設定                                                               #
 ###############################################################################
 
-# 蓋を開けたときにスリープ解除する
-sudo pmset -a lidwake 1
-
-# 15 分後にディスプレイをスリープさせる
-sudo pmset -a displaysleep 15
-
-# 以下は M5 Mac / Sequoia 上で pmset が sleepimage を削除しようとし
-# ターミナルがクラッシュするためコメントアウト。手動で設定すること。
+# バッテリー/スリープ設定はすべて pmset がターミナルをクラッシュさせるため
+# コメントアウト。システム設定 → バッテリー から手動で設定すること。
+# sudo pmset -a lidwake 1
+# sudo pmset -a displaysleep 15
 # sudo pmset -c sleep 0
 # sudo systemsetup -setcomputersleep Off
 # sudo pmset -b sleep 30
