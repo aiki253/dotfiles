@@ -265,8 +265,12 @@ defaults write com.apple.finder FXInfoPanesExpanded -dict \
 # Dock のスタックグリッドビューでホバー時にハイライトを有効にする
 defaults write com.apple.dock mouse-over-hilite-stack -bool true
 
-# Dock アイコンのサイズを 36 ピクセルに設定する
-defaults write com.apple.dock tilesize -int 36
+# Dock アイコンのサイズを 40 ピクセルに設定する
+defaults write com.apple.dock tilesize -int 40
+
+# Dock の拡大を有効にする
+defaults write com.apple.dock magnification -bool true
+defaults write com.apple.dock largesize -int 74
 
 # すべての Dock アイテムのスプリングローディングを有効にする
 defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
