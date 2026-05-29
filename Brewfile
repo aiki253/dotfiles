@@ -67,6 +67,9 @@ cask "microsoft-powerpoint"
 # VPN / Network
 cask "tailscale"
 
+# Display
+cask "displaylink"
+
 # =======================
 # Container
 # =======================
