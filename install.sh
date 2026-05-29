@@ -28,7 +28,7 @@ case "$(uname -s)" in
 esac
 
 # dotfiles を展開
-chezmoi init --apply https://github.com/aiki253/dotfiles
+chezmoi init --apply git@github.com:aiki253/dotfiles.git
 
 # ===========================
 # パッケージインストール
