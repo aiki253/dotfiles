@@ -27,7 +27,10 @@ case "$(uname -s)" in
     ;;
 esac
 
-# dotfiles を展開
+# dotfiles を展開（既にソースがあれば最新に更新してから適用）
+if chezmoi source-path &>/dev/null; then
+  git -C "$(chezmoi source-path)" pull --ff-only 2>/dev/null || true
+fi
 chezmoi init --apply git@github.com:aiki253/dotfiles.git
 
 # ===========================
