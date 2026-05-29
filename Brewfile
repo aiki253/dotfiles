@@ -97,10 +97,7 @@ vscode "ms-python.vscode-pylance"
 vscode "ms-python.debugpy"
 vscode "ms-python.vscode-python-envs"
 vscode "ms-toolsai.jupyter"
-vscode "ms-toolsai.jupyter-keymap"
 vscode "ms-toolsai.jupyter-renderers"
-vscode "ms-toolsai.vscode-jupyter-cell-tags"
-vscode "ms-toolsai.vscode-jupyter-slideshow"
 
 # C++
 vscode "ms-vscode.cpptools"
@@ -116,8 +113,8 @@ vscode "ms-vscode.remote-explorer"
 vscode "james-yu.latex-workshop"
 
 # Database
-vscode "cweijan.dbclient-jdbc"
-vscode "cweijan.vscode-postgresql-client2"
+# vscode "cweijan.dbclient-jdbc"
+# vscode "cweijan.vscode-postgresql-client2"
 
 # Utility
 vscode "mechatroner.rainbow-csv"
