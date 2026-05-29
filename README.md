@@ -43,3 +43,11 @@ bash <(curl -fsSL https://raw.githubusercontent.com/aiki253/dotfiles/main/instal
 | dotfiles の更新を取り込む | `chezmoi update` |
 | 設定ファイルを編集して反映 | `chezmoi edit ~/.zshrc && chezmoi apply` |
 | 差分確認 | `chezmoi diff` |
+
+### Brewfile の管理
+
+| やること | コマンド |
+|---|---|
+| アプリを追加・削除後に反映 | `brew bundle install --file=~/Brewfile` |
+| 現在の環境から Brewfile を更新 | `brew bundle dump --force --file=~/dotfiles/Brewfile` |
+| インストール済みか確認 | `brew bundle check --file=~/Brewfile` |
