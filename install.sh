@@ -39,10 +39,15 @@ chezmoi init --apply git@github.com:aiki253/dotfiles.git
 case "$(uname -s)" in
   Darwin)
     echo "=== brew bundle 開始 ==="
+    # sudo キャッシュを brew bundle が完了するまで維持する
+    sudo -v
+    while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+    SUDO_KEEPALIVE_PID=$!
     # OrbStack 等の VM ツールが sleepimage を削除しようとする際の
     # interactive プロンプトを防ぐため、先に immutable フラグを外す
     sudo chflags nouchg /private/var/vm/sleepimage 2>/dev/null || true
     brew bundle --file="$(chezmoi source-path)/Brewfile"
+    kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true
     echo "=== brew bundle 完了 ==="
     ;;
 
