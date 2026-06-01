@@ -30,17 +30,11 @@ _ask_or_keep() {
   fi
 }
 
-# Git name（chezmoi.toml → git config の順で既存値を探す）
-_cur=$(grep -E '^\s*name\s*=' ~/.config/chezmoi/chezmoi.toml 2>/dev/null \
-       | sed 's/.*=\s*"\(.*\)"/\1/' | head -1)
-[ -z "$_cur" ] && _cur=$(git config --global user.name 2>/dev/null || true)
-_ask_or_keep "Git name" "$_cur" "Taro Yamada"; GIT_NAME="$_ask_result"
-
-# Git email
-_cur=$(grep -E '^\s*email\s*=' ~/.config/chezmoi/chezmoi.toml 2>/dev/null \
-       | sed 's/.*=\s*"\(.*\)"/\1/' | head -1)
-[ -z "$_cur" ] && _cur=$(git config --global user.email 2>/dev/null || true)
-_ask_or_keep "Git email" "$_cur" "taro@example.com"; GIT_EMAIL="$_ask_result"
+# Git name/email は git config から読む（chezmoi apply 後は必ず設定済みになる）
+_ask_or_keep "Git name" "$(git config --global user.name 2>/dev/null || true)" "Taro Yamada"
+GIT_NAME="$_ask_result"
+_ask_or_keep "Git email" "$(git config --global user.email 2>/dev/null || true)" "taro@example.com"
+GIT_EMAIL="$_ask_result"
 
 # コンピューター名（macOSのみ）
 COMPUTER_NAME=""
@@ -81,8 +75,9 @@ case "$(uname -s)" in
     ;;
 esac
 
-# chezmoi の Git 設定を事前に書き込み（テンプレートのプロンプトをスキップ）
+# chezmoi の Git 設定を事前に書き込み（yaml との競合を避けるため yaml は削除する）
 mkdir -p ~/.config/chezmoi
+rm -f ~/.config/chezmoi/chezmoi.yaml
 cat > ~/.config/chezmoi/chezmoi.toml << EOF
 [data.git]
   name = "$GIT_NAME"
