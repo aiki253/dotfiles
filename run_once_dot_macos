@@ -295,13 +295,10 @@ defaults write com.apple.dock wvous-tr-modifier -int 0
 # Safari & WebKit                                                             #
 ###############################################################################
 
-# Safariのコンテナを初期化するため一度起動して閉じる（未起動だとdefaults writeが失敗する）
+# Safari の設定（install.sh 冒頭でコンテナ未作成時は起動を促している）
 if [ ! -d "$HOME/Library/Containers/com.apple.Safari" ]; then
-  open -a Safari
-  sleep 5
-  osascript -e 'tell application "Safari" to quit'
-  sleep 2
-fi
+  echo "Safari が未起動のため Safari 設定をスキップします"
+else
 
 # Tab キーでウェブページの各アイテムをハイライトする
 defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true
@@ -331,6 +328,8 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 defaults write com.apple.Safari WebContinuousSpellCheckingEnabled -bool true
 # 自動修正を無効にする
 defaults write com.apple.Safari WebAutomaticSpellingCorrectionEnabled -bool false
+
+fi # Safari コンテナ存在チェックの終端
 
 
 ###############################################################################
