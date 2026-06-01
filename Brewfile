@@ -50,19 +50,12 @@ cask "scroll-reverser"
 cask "slack"
 cask "zoom"
 cask "discord"
-cask "microsoft-teams"
 
 # Mail
-cask "microsoft-outlook"
 cask "thunderbird"
 
 # Productivity
 cask "todoist-app"
-
-# Microsoft Office
-cask "microsoft-word"
-cask "microsoft-excel"
-cask "microsoft-powerpoint"
 
 # =======================
 # Mac App Store
@@ -117,8 +110,17 @@ vscode "njzy.stats-bar"
 vscode "ms-ceintl.vscode-language-pack-ja"
 
 # =======================
-# System Extensions（個別の admin 認証が必要なため最後にまとめる）
+# PKG / System Extensions（個別の admin 認証が必要なため最後にまとめる）
 # =======================
+
+# Microsoft（PKG インストーラーのため認証が必要）
+cask "microsoft-teams"
+cask "microsoft-outlook"
+cask "microsoft-word"
+cask "microsoft-excel"
+cask "microsoft-powerpoint"
+
+# System Extensions（システム拡張のため認証が必要）
 cask "tailscale-app"
 cask "displaylink"
 cask "orbstack"

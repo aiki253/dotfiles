@@ -130,7 +130,7 @@ case "$(uname -s)" in
     fi
 
     echo "=== brew bundle 開始 ==="
-    echo "※ tailscale / displaylink / orbstack はシステム拡張のため個別に認証が求められます"
+    echo "※ Microsoft 系・tailscale・displaylink・orbstack は PKG/システム拡張のため最後に個別認証が求められます"
     sudo chflags nouchg /private/var/vm/sleepimage 2>/dev/null || true
     sudo -v
 
