@@ -258,7 +258,7 @@ defaults write com.apple.dock tilesize -int 40
 
 # Dock の拡大を有効にする
 defaults write com.apple.dock magnification -bool true
-defaults write com.apple.dock largesize -int 74
+defaults write com.apple.dock largesize -int 100
 
 # すべての Dock アイテムのスプリングローディングを有効にする
 defaults write com.apple.dock enable-spring-load-actions-on-all-items -bool true
