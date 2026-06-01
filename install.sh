@@ -89,6 +89,8 @@ if chezmoi source-path &>/dev/null; then
   git -C "$(chezmoi source-path)" pull --ff-only 2>/dev/null || true
 fi
 chezmoi init --apply https://github.com/aiki253/dotfiles.git
+# init が chezmoi.yaml を再生成する場合があるため、toml との競合を解消する
+rm -f ~/.config/chezmoi/chezmoi.yaml
 
 # ===========================
 # パッケージインストール
@@ -106,9 +108,13 @@ case "$(uname -s)" in
     sudo chflags nouchg /private/var/vm/sleepimage 2>/dev/null || true
     sudo -v  # キャッシュをリフレッシュ（PKGインストーラー系caskは別途admin認証を求める場合あり）
 
+    # chezmoi source-path が取れない場合はデフォルトパスにフォールバック
+    _brewfile="$(chezmoi source-path 2>/dev/null)/Brewfile"
+    [ ! -f "$_brewfile" ] && _brewfile="$HOME/.local/share/chezmoi/Brewfile"
+
     _brew_bundle() {
       local log; log=$(mktemp)
-      brew bundle --file="$(chezmoi source-path)/Brewfile" >"$log" 2>&1
+      brew bundle --file="$_brewfile" >"$log" 2>&1
       local status=$?
       if [ $status -ne 0 ]; then
         local failures
