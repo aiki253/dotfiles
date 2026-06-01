@@ -64,17 +64,6 @@ cask "microsoft-word"
 cask "microsoft-excel"
 cask "microsoft-powerpoint"
 
-# VPN / Network
-cask "tailscale-app"
-
-# Display
-cask "displaylink"
-
-# =======================
-# Container
-# =======================
-cask "orbstack"
-
 # =======================
 # Mac App Store
 # =======================
@@ -125,3 +114,10 @@ vscode "oderwat.indent-rainbow"
 vscode "yzhang.markdown-all-in-one"
 vscode "njzy.stats-bar"
 vscode "ms-ceintl.vscode-language-pack-ja"
+
+# =======================
+# System Extensions（個別の admin 認証が必要なため最後にまとめる）
+# =======================
+cask "tailscale-app"
+cask "displaylink"
+cask "orbstack"
