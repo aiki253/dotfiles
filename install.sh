@@ -13,13 +13,49 @@ done
 # ===========================
 # 入力項目を事前収集（放置でも完走できるよう最初にまとめて聞く）
 # ===========================
-read -rp "Git name (例: Taro Yamada): " GIT_NAME
-read -rp "Git email: " GIT_EMAIL
 
+# 既存値があれば表示して「変更しますか？」、なければそのまま入力
+_ask_or_keep() {
+  local label="$1" current="$2" example="$3"
+  if [ -n "$current" ]; then
+    echo "${label}: ${current}"
+    read -rp "変更しますか？ [y/N]: " _yn
+    if [[ "$_yn" =~ ^[Yy]$ ]]; then
+      read -rp "${label} (例: ${example}): " _ask_result
+    else
+      _ask_result="$current"
+    fi
+  else
+    read -rp "${label} (例: ${example}): " _ask_result
+  fi
+}
+
+# Git name（chezmoi.toml → git config の順で既存値を探す）
+_cur=$(grep -E '^\s*name\s*=' ~/.config/chezmoi/chezmoi.toml 2>/dev/null \
+       | sed 's/.*=\s*"\(.*\)"/\1/' | head -1)
+[ -z "$_cur" ] && _cur=$(git config --global user.name 2>/dev/null || true)
+_ask_or_keep "Git name" "$_cur" "Taro Yamada"; GIT_NAME="$_ask_result"
+
+# Git email
+_cur=$(grep -E '^\s*email\s*=' ~/.config/chezmoi/chezmoi.toml 2>/dev/null \
+       | sed 's/.*=\s*"\(.*\)"/\1/' | head -1)
+[ -z "$_cur" ] && _cur=$(git config --global user.email 2>/dev/null || true)
+_ask_or_keep "Git email" "$_cur" "taro@example.com"; GIT_EMAIL="$_ask_result"
+
+# コンピューター名（macOSのみ）
 COMPUTER_NAME=""
-read -rp "コンピューター名を設定しますか？ [y/N]: " _set_cn
-if [[ "$_set_cn" =~ ^[Yy]$ ]]; then
-  read -rp "コンピューター名 (例: m5-mba, 大文字/スペース非推奨): " COMPUTER_NAME
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  _cur=$(scutil --get ComputerName 2>/dev/null || true)
+  if [ -n "$_cur" ]; then
+    echo "コンピューター名: ${_cur}"
+    read -rp "変更しますか？ [y/N]: " _yn
+    [[ "$_yn" =~ ^[Yy]$ ]] && \
+      read -rp "コンピューター名 (例: m5-mba, 大文字/スペース非推奨): " COMPUTER_NAME
+  else
+    read -rp "コンピューター名を設定しますか？ [y/N]: " _yn
+    [[ "$_yn" =~ ^[Yy]$ ]] && \
+      read -rp "コンピューター名 (例: m5-mba, 大文字/スペース非推奨): " COMPUTER_NAME
+  fi
 fi
 
 # sudo を最初に取得し、全工程が終わるまで維持する
