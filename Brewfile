@@ -20,6 +20,9 @@ brew "postgresql@17", restart_service: :changed
 # Mac App Store CLI
 brew "mas"
 
+# File system
+brew "tree"
+
 # 用途次第で有効化
 # brew "go"           # Go 開発するなら
 # brew "wakeonlan"    # リモート起動するなら
