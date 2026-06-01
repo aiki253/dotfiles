@@ -130,28 +130,29 @@ case "$(uname -s)" in
     fi
 
     echo "=== brew bundle 開始 ==="
+    echo "※ tailscale / displaylink / orbstack はシステム拡張のため個別に認証が求められます"
     sudo chflags nouchg /private/var/vm/sleepimage 2>/dev/null || true
-    sudo -v  # キャッシュをリフレッシュ（PKGインストーラー系caskは別途admin認証を求める場合あり）
+    sudo -v
 
     # chezmoi source-path が取れない場合はデフォルトパスにフォールバック
     _brewfile="$(chezmoi source-path 2>/dev/null)/Brewfile"
     [ ! -f "$_brewfile" ] && _brewfile="$HOME/.local/share/chezmoi/Brewfile"
 
     _brew_bundle() {
-      local log; log=$(mktemp)
-      brew bundle --file="$_brewfile" >"$log" 2>&1
-      local status=$?
-      if [ $status -ne 0 ]; then
-        local failures
-        failures=$(grep -iE "✘|Error:|failed" "$log" 2>/dev/null || true)
-        if [ -n "$failures" ]; then
-          echo "$failures"
-        else
-          tail -30 "$log"  # grep が一致しない場合はログ末尾を表示
-        fi
+      local log brew_status
+      log=$(mktemp)
+      # ✔︎（ダウンロード確認）と Fetching 一覧行を除いて進捗をリアルタイム表示
+      brew bundle --file="$_brewfile" 2>&1 | \
+        tee "$log" | \
+        grep --line-buffered -vE "^✔︎|^Fetching:|^$"
+      brew_status=${PIPESTATUS[0]}
+      if [ $brew_status -ne 0 ]; then
+        echo ""
+        echo "--- 失敗したパッケージ ---"
+        grep -iE "✘|Error:|failed" "$log" || tail -20 "$log"
       fi
       rm -f "$log"
-      return $status
+      return $brew_status
     }
 
     if ! _brew_bundle; then
