@@ -67,6 +67,7 @@ cask "microsoft-powerpoint"
 # =======================
 # Mac App Store
 # =======================
+mas "Magnet", id: 441258766
 mas "LINE", id: 539883307
 # mas "Xcode", id: 497799835
 # mas "Keynote", id: 409183694
