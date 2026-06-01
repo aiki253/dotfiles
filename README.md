@@ -1,5 +1,8 @@
 # dotfiles
 
+![macOS](https://img.shields.io/badge/macOS-26.5%20Tahoe-blue)
+![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04-orange)
+
 ## macOS
 
 ```bash
@@ -51,3 +54,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/aiki253/dotfiles/main/instal
 | アプリを追加・削除後に反映 | `brew bundle install --file=~/Brewfile` |
 | 現在の環境から Brewfile を更新 | `brew bundle dump --force --file=~/dotfiles/Brewfile` |
 | インストール済みか確認 | `brew bundle check --file=~/Brewfile` |
+
+---
+
+## 参考
+
+- macOS 設定スクリプト: [https://mths.be/macos](https://mths.be/macos)
