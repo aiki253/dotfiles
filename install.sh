@@ -109,22 +109,30 @@ case "$(uname -s)" in
 
     echo "=== brew bundle 開始 ==="
     sudo chflags nouchg /private/var/vm/sleepimage 2>/dev/null || true
+    sudo -v  # キャッシュをリフレッシュ（PKGインストーラー系caskは別途admin認証を求める場合あり）
 
     _brew_bundle() {
       local log; log=$(mktemp)
-      if brew bundle --file="$(chezmoi source-path)/Brewfile" >"$log" 2>&1; then
-        rm -f "$log"
-        return 0
-      else
-        grep -E "^✘|Error:" "$log" || true
-        rm -f "$log"
-        return 1
+      brew bundle --file="$(chezmoi source-path)/Brewfile" >"$log" 2>&1
+      local status=$?
+      if [ $status -ne 0 ]; then
+        local failures
+        failures=$(grep -iE "✘|Error:|failed" "$log" 2>/dev/null || true)
+        if [ -n "$failures" ]; then
+          echo "$failures"
+        else
+          tail -30 "$log"  # grep が一致しない場合はログ末尾を表示
+        fi
       fi
+      rm -f "$log"
+      return $status
     }
 
     if ! _brew_bundle; then
       echo "--- 再試行 ---"
-      _brew_bundle || echo "再試行後も失敗したパッケージがあります"
+      if ! _brew_bundle; then
+        echo "上記のパッケージは手動でインストールしてください: brew install --cask <name>"
+      fi
     fi
     echo "=== brew bundle 完了 ==="
     ;;
