@@ -5,21 +5,12 @@
 # 設定を上書きされないよう、開いているシステム環境設定を閉じる
 osascript -e 'tell application "System Preferences" to quit'
 
-# 管理者パスワードを事前に要求する
+# install.sh 経由でない単独実行に備えて sudo キャッシュを確認する
 sudo -v
-
-# `.macos` が完了するまで `sudo` のタイムスタンプを更新し続ける
-while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 ###############################################################################
 # UI/UX 全般                                                                  #
 ###############################################################################
-
-# コンピュータ名を設定する（システム環境設定 → 共有 と同様）
-sudo scutil --set ComputerName "m5-mba"
-sudo scutil --set HostName "m5-mba"
-sudo scutil --set LocalHostName "m5-mba"
-sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "m5-mba"
 
 # サイドバーのアイコンサイズを中に設定する
 defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 2
@@ -103,10 +94,10 @@ defaults write com.apple.driver.AppleBluetoothMultitouch.trackpad TrackpadFiveFi
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
 # Ctrl (^) キーとスクロールジェスチャーでズームする
-defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
-defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
+sudo defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
+sudo defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
 # ズーム中はキーボードフォーカスを追従する
-defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
+sudo defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
 
 # キーリピートを有効にする（長押し入力候補を無効にする）
 defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
@@ -303,6 +294,14 @@ defaults write com.apple.dock wvous-tr-modifier -int 0
 ###############################################################################
 # Safari & WebKit                                                             #
 ###############################################################################
+
+# Safariのコンテナを初期化するため一度起動して閉じる（未起動だとdefaults writeが失敗する）
+if [ ! -d "$HOME/Library/Containers/com.apple.Safari" ]; then
+  open -a Safari
+  sleep 5
+  osascript -e 'tell application "Safari" to quit'
+  sleep 2
+fi
 
 # Tab キーでウェブページの各アイテムをハイライトする
 defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true

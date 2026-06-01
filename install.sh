@@ -11,6 +11,24 @@ for arg in "$@"; do
 done
 
 # ===========================
+# 入力項目を事前収集（放置でも完走できるよう最初にまとめて聞く）
+# ===========================
+read -rp "Git name (例: Taro Yamada): " GIT_NAME
+read -rp "Git email: " GIT_EMAIL
+
+COMPUTER_NAME=""
+read -rp "コンピューター名を設定しますか？ [y/N]: " _set_cn
+if [[ "$_set_cn" =~ ^[Yy]$ ]]; then
+  read -rp "コンピューター名 (例: m5-mba, 大文字/スペース非推奨): " COMPUTER_NAME
+fi
+
+# sudo を最初に取得し、全工程が終わるまで維持する
+sudo -v
+while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
+SUDO_KEEPALIVE_PID=$!
+trap 'kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true' EXIT
+
+# ===========================
 # chezmoi のインストール
 # ===========================
 case "$(uname -s)" in
@@ -27,6 +45,14 @@ case "$(uname -s)" in
     ;;
 esac
 
+# chezmoi の Git 設定を事前に書き込み（テンプレートのプロンプトをスキップ）
+mkdir -p ~/.config/chezmoi
+cat > ~/.config/chezmoi/chezmoi.toml << EOF
+[data.git]
+  name = "$GIT_NAME"
+  email = "$GIT_EMAIL"
+EOF
+
 # dotfiles を展開（既にソースがあれば最新に更新してから適用）
 if chezmoi source-path &>/dev/null; then
   git -C "$(chezmoi source-path)" pull --ff-only 2>/dev/null || true
@@ -38,16 +64,32 @@ chezmoi init --apply https://github.com/aiki253/dotfiles.git
 # ===========================
 case "$(uname -s)" in
   Darwin)
+    if [[ -n "$COMPUTER_NAME" ]]; then
+      sudo scutil --set ComputerName "$COMPUTER_NAME"
+      sudo scutil --set HostName "$COMPUTER_NAME"
+      sudo scutil --set LocalHostName "$COMPUTER_NAME"
+      sudo defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server NetBIOSName -string "$COMPUTER_NAME"
+    fi
+
     echo "=== brew bundle 開始 ==="
-    # sudo キャッシュを brew bundle が完了するまで維持する
-    sudo -v
-    while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
-    SUDO_KEEPALIVE_PID=$!
-    # OrbStack 等の VM ツールが sleepimage を削除しようとする際の
-    # interactive プロンプトを防ぐため、先に immutable フラグを外す
     sudo chflags nouchg /private/var/vm/sleepimage 2>/dev/null || true
-    brew bundle --file="$(chezmoi source-path)/Brewfile"
-    kill "$SUDO_KEEPALIVE_PID" 2>/dev/null || true
+
+    _brew_bundle() {
+      local log; log=$(mktemp)
+      if brew bundle --file="$(chezmoi source-path)/Brewfile" >"$log" 2>&1; then
+        rm -f "$log"
+        return 0
+      else
+        grep -E "^✘|Error:" "$log" || true
+        rm -f "$log"
+        return 1
+      fi
+    }
+
+    if ! _brew_bundle; then
+      echo "--- 再試行 ---"
+      _brew_bundle || echo "再試行後も失敗したパッケージがあります"
+    fi
     echo "=== brew bundle 完了 ==="
     ;;
 
