@@ -295,9 +295,10 @@ defaults write com.apple.dock wvous-tr-modifier -int 0
 # Safari & WebKit                                                             #
 ###############################################################################
 
-# Safari の設定（install.sh 冒頭でコンテナ未作成時は起動を促している）
-if [ ! -d "$HOME/Library/Containers/com.apple.Safari" ]; then
-  echo "Safari が未起動のため Safari 設定をスキップします"
+# Safari の設定（フルディスクアクセス付与 + Safari 起動済みが前提）
+_safari_ls=$(ls "$HOME/Library/Containers/com.apple.Safari" 2>&1)
+if echo "$_safari_ls" | grep -qE "No such file|Operation not permitted"; then
+  echo "Safari 設定をスキップします（フルディスクアクセスまたは Safari 初回起動が必要）"
 else
 
 # Tab キーでウェブページの各アイテムをハイライトする
