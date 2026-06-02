@@ -133,6 +133,9 @@ sudo pmset -a standbydelay 10800
 # コンピュータスリープを無効にする（電源接続時）
 sudo systemsetup -setcomputersleep Off > /dev/null 2>&1 || true
 
+# メニューバーにバッテリー残量をパーセント表示する
+defaults write com.apple.controlcenter BatteryShowPercentage -bool true
+
 # ハイバネーションモード: sleepimage削除プロンプトが出てスクリプトが止まるため無効化
 # sudo pmset -a hibernatemode 0
 
