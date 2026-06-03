@@ -1,0 +1,26 @@
+アプリ	file:///System/Applications/Apps.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.apps.launcher
+アクティビティモニタ	file:///System/Applications/Utilities/Activity%20Monitor.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.ActivityMonitor
+Safari	file:///System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.Safari
+Google Chrome	file:///Applications/Google%20Chrome.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.google.Chrome
+メール	file:///System/Applications/Mail.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.mail
+リマインダー	file:///System/Applications/Reminders.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.reminders
+メモ	file:///System/Applications/Notes.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.Notes
+システム設定	file:///System/Applications/System%20Settings.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.systempreferences
+ターミナル	file:///System/Applications/Utilities/Terminal.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.Terminal
+Thunderbird	file:///Applications/Thunderbird.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	org.mozilla.thunderbird
+Microsoft Teams	file:///Applications/Microsoft%20Teams.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.microsoft.teams2
+Microsoft PowerPoint	file:///Applications/Microsoft%20PowerPoint.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.microsoft.Powerpoint
+Discord	file:///Applications/Discord.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.hnc.Discord
+OrbStack	file:///Applications/OrbStack.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	dev.kdrag0n.MacVirt
+Slack	file:///Applications/Slack.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.tinyspeck.slackmacgap
+Todoist	file:///Applications/Todoist.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.todoist.mac.Todoist
+Microsoft Outlook	file:///Applications/Microsoft%20Outlook.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.microsoft.Outlook
+Tailscale	file:///Applications/Tailscale.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	io.tailscale.ipn.macsys
+Visual Studio Code	file:///Applications/Visual%20Studio%20Code.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.microsoft.VSCode
+カレンダー	file:///System/Applications/Calendar.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.iCal
+iPhoneミラーリング	file:///System/Applications/iPhone%20Mirroring.app/	persistentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.ScreenContinuity
+プレビュー	file:///System/Applications/Preview.app/	recentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.Preview
+テキストエディット	file:///System/Applications/TextEdit.app/	recentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.apple.TextEdit
+Microsoft Excel	file:///Applications/Microsoft%20Excel.app/	recentApps	/Users/aiki/Library/Preferences/com.apple.dock.plist	com.microsoft.Excel
+ダウンロード	file:///Users/aiki/Downloads/	persistentOthers	/Users/aiki/Library/Preferences/com.apple.dock.plist	
+書類	file:///Users/aiki/Documents/	persistentOthers	/Users/aiki/Library/Preferences/com.apple.dock.plist	

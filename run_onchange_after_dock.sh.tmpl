@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+#
+# Dock を dock-layout.txt の通りに再構築する。
+#
+# dock-layout.txt は `dockutil --list` の出力をそのまま保存したもの（タブ区切り）。
+#   列: ラベル / file:// URL / セクション / plist パス / バンドルID
+#
+# 現在の Dock を書き出して更新するには、ソースディレクトリで:
+#   dockutil --list > "$(chezmoi source-path)/dock-layout.txt"
+# その後 `chezmoi apply` で他のマシンにも反映される。
+#
+# - ユーザー名は $HOME から自動取得するので、/Users/aiki 以外の環境でもそのまま動く。
+# - run_onchange_ なので dock-layout.txt を編集すると次回 apply 時に再実行される。
+#
+set -uo pipefail
+
+# macOS 以外では何もしない
+[[ "$(uname -s)" == "Darwin" ]] || exit 0
+
+# dockutil が無ければ入れる（chezmoi apply は brew bundle より先に走るため）
+if ! command -v dockutil >/dev/null 2>&1; then
+  if command -v brew >/dev/null 2>&1; then
+    brew install dockutil
+  else
+    echo "dockutil も brew も見つからないため Dock 設定をスキップします" >&2
+    exit 0
+  fi
+fi
+
+# dock-layout.txt の中身を埋め込む（chezmoi がレンダリング時に展開）。
+# 内容が変わるとこのスクリプトのハッシュが変わり、run_onchange が再実行する。
+LAYOUT=$(cat <<'DOCK_LAYOUT_EOF'
+{{ include "dock-layout.txt" }}
+DOCK_LAYOUT_EOF
+)
+
+# Dock を一旦空にする
+dockutil --remove all --no-restart >/dev/null 2>&1
+
+while IFS=$'\t' read -r label url section plist bundle; do
+  [[ -z "${url:-}" ]] && continue
+
+  # 永続的に固定されたアプリ・フォルダのみ復元する（recentApps 等は除外）
+  case "$section" in
+    persistentApps|persistentOthers) ;;
+    *) continue ;;
+  esac
+
+  # file:// を外す → %XX を URL デコード → ユーザー名を現在の $HOME に差し替え
+  path=$(printf '%s' "$url" \
+    | sed -e 's|^file://||' \
+    | perl -pe 's/%([0-9A-Fa-f]{2})/chr(hex($1))/ge' \
+    | sed -e "s|^/Users/[^/]*/|$HOME/|")
+  path="${path%/}"   # 末尾スラッシュを除去
+
+  if [[ ! -e "$path" ]]; then
+    echo "スキップ（存在しません）: $path"
+    continue
+  fi
+
+  if [[ "$section" == "persistentOthers" ]]; then
+    # フォルダ（ダウンロード・書類など）はスタックとして追加
+    dockutil --add "$path" --view auto --display stack --no-restart >/dev/null 2>&1
+  else
+    dockutil --add "$path" --no-restart >/dev/null 2>&1
+  fi
+done <<< "$LAYOUT"
+
+killall Dock >/dev/null 2>&1 || true
+echo "Dock を dock-layout.txt の通りに再構築しました"

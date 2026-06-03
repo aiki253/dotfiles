@@ -23,6 +23,9 @@ brew "mas"
 # File system
 brew "tree"
 
+# Dock 構成（dock-layout.txt の通りに Dock を再構築するのに使う）
+brew "dockutil"
+
 # 用途次第で有効化
 # brew "go"           # Go 開発するなら
 # brew "wakeonlan"    # リモート起動するなら
