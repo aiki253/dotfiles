@@ -62,6 +62,7 @@ cask "thunderbird"
 
 # Productivity
 cask "todoist-app"
+cask "obsidian"
 
 # =======================
 # Mac App Store
